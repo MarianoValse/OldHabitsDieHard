@@ -1,0 +1,17 @@
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# VS Code
+.vscode/
+
+# Excel outputs
+output/
+*.xlsx
+
+# OS
+.DS_Store
+Thumbs.db
