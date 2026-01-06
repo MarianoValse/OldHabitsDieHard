@@ -2,9 +2,9 @@ import pandas as pd
 from pathlib import Path
 
 
-from models.habito import cHabito
-from models.dificultad import cDificultad
-from models.peso import cPeso
+from src.models.habito import cHabito
+from src.models.dificultad import cDificultad
+from src.models.peso import cPeso
 # from models.medida import Medida
 
 
