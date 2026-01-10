@@ -55,7 +55,7 @@ def getEntriesList():
 
     with getConnection() as conn:
         rows = conn.execute(
-            "select HAB_ID , HAB_name , ENTRY_fk_grade from Habits hab LEFT JOIN Entries entry on hab.HAB_ID = entry.ENTRY_fk_habits where hab.HAB_active  "
+            "select HAB_ID , HAB_name , ENTRY_fk_grade from Habits hab LEFT JOIN Entries entry on hab.HAB_ID = entry.ENTRY_fk_habits where hab.HAB_active group by  HAB_ID  "
         ).fetchall()
 
     # loader = cDDBBLoader(DATA_DIR)
