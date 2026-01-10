@@ -13,7 +13,7 @@ class ExcelLoader:
     def __init__(self, data_dir: Path):
         self.data_dir = data_dir
 
-    def get_dificultyList(self):
+    def getdificultyList(self):
         df = pd.read_excel(self.data_dir / "dificultad.xlsx")
         
         dificultadList = []        
