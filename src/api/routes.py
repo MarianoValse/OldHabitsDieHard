@@ -47,3 +47,28 @@ def registrar_habito(registro: RegistroIn):
 
     return {"status": "ok"}
 
+@router.get("/habitos/hoy")
+def get_registroList():
+
+    fecha = date.today().isoformat()
+
+    with get_connection() as conn:
+        conn.execute(
+            "SELECT habito_id FROM registros WHERE fecha = ? group by habito_id ",
+            (fecha)
+        )
+
+    loader = ExcelLoader(DATA_DIR)
+    habitos_hoy = loader.cargar_habitos()
+
+    return [
+        {
+            "id": h.id,
+            "nombre": h.nombre,
+            "activo": h.activo,
+            "dificultad": h.dificultad.nombre if h.dificultad else None,
+            "peso": h.peso.nombre if h.peso else None
+        }
+        for h in habitos
+        if h.activo
+    ]

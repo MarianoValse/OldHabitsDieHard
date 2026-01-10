@@ -2,10 +2,10 @@ import pandas as pd
 from pathlib import Path
 
 
-from src.models.habito import cHabito
-from src.models.dificultad import cDificultad
-from src.models.peso import cPeso
-# from models.medida import Medida
+from src.models.habits import cHabits
+from src.models.dificulty import cDificulty
+from src.models.weigth import cWeigth
+
 
 
 class ExcelLoader:
@@ -13,60 +13,60 @@ class ExcelLoader:
     def __init__(self, data_dir: Path):
         self.data_dir = data_dir
 
-    def cargar_dificultadList(self):
+    def get_dificultyList(self):
         df = pd.read_excel(self.data_dir / "dificultad.xlsx")
         
         dificultadList = []        
         for row in df.itertuples():
-            dificultadList.append(cDificultad(row.DIF_ID, row.DIF_Nombre, row.DIF_Valor))
+            dificultadList.append(cDificulty(row.DIF_ID, row.DIF_Nombre, row.DIF_Valor))
         
         return dificultadList
     
 
-    def getDificultad(self,pid):        
-        dificultadList= self.cargar_dificultadList()
+    def getDificulty(self,pid):        
+        dificultyList= self.getdificultyList()
         # dificultad = Enumerable(dificultadList).where(lambda x: x.id = pid).tolist()
     
-        for d in dificultadList:
+        for d in dificultyList:
             if d.id == pid:
                 return d
 
         return None    
     
-    def cargar_pesoList(self):
+    def getWeigthList(self):
         df = pd.read_excel(self.data_dir / "peso.xlsx")
 
-        pesoList = []
+        wiegthList = []
         
         for row in df.itertuples():
-            pesoList.append(cPeso(row.PESO_ID, row.PESO_Nombre, row.PESO_Valor))
+            wiegthList.append(cWeigth(row.PESO_ID, row.PESO_Nombre, row.PESO_Valor))
         
-        return pesoList
+        return wiegthList
     
     
-    def getPeso(self,pid):        
-        pesoList= self.cargar_pesoList()
+    def getWiegth(self,pid):        
+        wiegthList= self.getWeigthList()
         # dificultad = Enumerable(dificultadList).where(lambda x: x.id = pid).tolist()
     
-        for p in pesoList:
-            if p.id == pid:
-                return p
+        for w in wiegthList:
+            if w.id == pid:
+                return w
 
         return None
 
-    def cargar_habitos(self): 
+    def getHabitsList(self): 
         df = pd.read_excel(self.data_dir / "habitos.xlsx")
-        habitos = []
+        habits = []
 
         for row in df.itertuples():
-            habitos.append(
-                cHabito(
+            habits.append(
+                cHabits(
                     id=row.HAB_ID,                    
-                    pDificultad=self.getDificultad(row.HAB_fk_dificultad),
-                    pPeso=self.getPeso(row.HAB_fk_peso),                    
+                    pDificultad=self.getDificulty(row.HAB_fk_dificultad),
+                    pPeso=self.getWiegth(row.HAB_fk_peso),                    
                     pNombre=row.HAB_Nombre,
                     pActivo=row.HAB_Activo,
                 )
             )
 
-        return habitos
+        return habits
