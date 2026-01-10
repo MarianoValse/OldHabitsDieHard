@@ -54,23 +54,18 @@ def getEntriesList():
     fecha = date.today().isoformat()
 
     with getConnection() as conn:
-        conn.execute(
-            # aca vamos a hacer otra cosa una lista de los habitps y cuales estan y no hechos hoy
-            # "SELECT ENTRY_fk_habits FROM Entries WHERE ENTRY_date = ? group by ENTRY_fk_habits ",
-            "SELECT hab.HAB_name , entry.ENTRY_value FROM Habits hab LEFT JOIN Entries entry on entry.ENTRY_fk_habits = hab.HAB_ID WHERE hab.HAB_active = 1 and entry.ENTRY_date = ? ",            
-            (fecha)
-        )
+        rows = conn.execute(
+            "select HAB_ID , HAB_name , ENTRY_fk_grade from Habits hab LEFT JOIN Entries entry on hab.HAB_ID = entry.ENTRY_fk_habits where hab.HAB_active  "
+        ).fetchall()
 
-    loader = cDDBBLoader(DATA_DIR)
-    habitsToDay = loader.getHabitsList()
+    # loader = cDDBBLoader(DATA_DIR)
+    # habitsToDay = loader.getHabitsList()
 
     return [
         {
-            "id": h.id,
-            "nombre": h.name,
-            "activo": h.active,
-            "dificultad": h.dificulty.name if h.dificulty else None,
-            "peso": h.weigth.name if h.weigth else None
+            "id": r[0],
+            "nombre": r[1],
+            "grado": r[2]
         }
-        for h in habitsToDay
+        for r in rows
     ]

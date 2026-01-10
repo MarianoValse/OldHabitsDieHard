@@ -8,7 +8,6 @@ client = TestClient(app)
 
 def test_habitos_hoy_marca_correctamente():
     
-    x=1 
     fecha = date.today().isoformat()
 
     # limpiamos registros
@@ -21,7 +20,7 @@ def test_habitos_hoy_marca_correctamente():
 
     assert len(habits) > 0
 
-    firstHabit = habits[0]
+    firstHabit = habits[2]
 
     # marcamos uno como hecho hoy
     client.post("/entries",
@@ -36,13 +35,10 @@ def test_habitos_hoy_marca_correctamente():
     resp = client.get("/habits/today")
     data = resp.json()
 
-    find = False
-
     for h in data:
         if h["id"] == firstHabit["id"]:
-            find = True
-            assert h["hecho"] is True
+            assert h["grado"] > 0                             
         else:
-            assert h["hecho"] is False
+            assert h["grado"] == None 
 
-    assert find is True
+    

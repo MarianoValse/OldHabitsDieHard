@@ -81,6 +81,16 @@ class cDDBBLoader:
                     r[3],
                     r[4]
                 ) for r in rows]
+    
+    # def getHabitsToday(self,date): 
+            
+    #     with getConnection() as conn:
+    #         with getConnection() as conn:
+    #             conn.execute(
+    #             "select HAB_ID , HAB_name , ENTRY_fk_grade from Habits hab LEFT JOIN Entries entry on hab.HAB_ID = entry.ENTRY_fk_habits where hab.HAB_active  and entry.ENTRY_date = ? " ,            
+    #             (date,)).fetchall()
+
+    #     return [r[0],r[3],r[4] for r in rows]
 
 
         # df = pd.read_excel(self.data_dir / "habitos.xlsx")
