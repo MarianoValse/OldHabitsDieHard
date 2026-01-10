@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from loaders.excel_loader import ExcelLoader
+from src.loaders.loader import cDDBBLoader
 from services.habito_service import HabitoService
 from services.semana_service import SemanaService
 

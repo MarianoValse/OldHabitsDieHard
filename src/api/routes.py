@@ -2,9 +2,9 @@ from fastapi import APIRouter
 from pathlib import Path
 from datetime import date
 from pydantic import BaseModel
-from src.services.db import get_connection
+from src.services.db import getConnection
 
-from src.loaders.excel_loader import ExcelLoader
+from src.loaders.loader import cDDBBLoader
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -12,63 +12,65 @@ DATA_DIR = BASE_DIR / "data"
 router = APIRouter()
 
 
-class RegistroIn(BaseModel):
-    habito_id: int
-    valor: int = 1
-    fecha: date | None = None
+class cEntrie(BaseModel):
+    habit_id: int
+    value: int = 1
+    entrieDate: date | None = None
 
 
-@router.get("/habitos")
-def listar_habitos():
-    loader = ExcelLoader(DATA_DIR)
-    habitos = loader.cargar_habitos()
+@router.get("/habits")
+def getHabits():
+    loader = cDDBBLoader(DATA_DIR) 
+    habits = loader.getHabitsList() 
 
     return [
         {
             "id": h.id,
-            "nombre": h.nombre,
-            "activo": h.activo,
-            "dificultad": h.dificultad.nombre if h.dificultad else None,
-            "peso": h.peso.nombre if h.peso else None
+            "nombre": h.name,
+            "activo": h.active,
+            "dificultad": h.dificulty.name if h.dificulty else None,
+            "peso": h.weigth.name if h.weigth else None
         }
-        for h in habitos
-        if h.activo
+        for h in habits
+        if h.active
     ]
 
-@router.post("/registro")
-def registrar_habito(registro: RegistroIn):
-    fecha = registro.fecha or date.today().isoformat()
+@router.post("/entries")
+def createEntrie(entrie: cEntrie):
+    # date = entrie.entrieDate or date.today().isoformat()
 
-    with get_connection() as conn:
+    with getConnection() as conn:
         conn.execute(
-            "INSERT INTO registros (habito_id, fecha, valor) VALUES (?, ?, ?)",
-            (registro.habito_id, fecha, registro.valor)
+            "INSERT INTO Entries (ENTRY_fk_habits, ENTRY_fk_grade, ENTRY_date) VALUES (?,?,?)",           
+            (entrie.habit_id, entrie.value, entrie.entrieDate)
+            # "INSERT INTO Entries (ENTRY_fk_habits, ENTRY_fk_grade, ENTRY_date) VALUES (1, 2, '2025-01-10')", 
         )
 
     return {"status": "ok"}
 
-@router.get("/habitos/hoy")
-def get_registroList():
+@router.get("/habits/today")
+def getEntriesList():
 
     fecha = date.today().isoformat()
 
-    with get_connection() as conn:
+    with getConnection() as conn:
         conn.execute(
-            "SELECT habito_id FROM registros WHERE fecha = ? group by habito_id ",
+            # aca vamos a hacer otra cosa una lista de los habitps y cuales estan y no hechos hoy
+            # "SELECT ENTRY_fk_habits FROM Entries WHERE ENTRY_date = ? group by ENTRY_fk_habits ",
+            "SELECT hab.HAB_name , entry.ENTRY_value FROM Habits hab LEFT JOIN Entries entry on entry.ENTRY_fk_habits = hab.HAB_ID WHERE hab.HAB_active = 1 and entry.ENTRY_date = ? ",            
             (fecha)
         )
 
-    loader = ExcelLoader(DATA_DIR)
-    habitos_hoy = loader.cargar_habitos()
+    loader = cDDBBLoader(DATA_DIR)
+    habitsToDay = loader.getHabitsList()
 
     return [
         {
             "id": h.id,
-            "nombre": h.nombre,
-            "activo": h.activo,
-            "dificultad": h.dificultad.nombre if h.dificultad else None,
-            "peso": h.peso.nombre if h.peso else None
+            "nombre": h.name,
+            "activo": h.active,
+            "dificultad": h.dificulty.name if h.dificulty else None,
+            "peso": h.weigth.name if h.weigth else None
         }
-        for h in habitos
-        if h.activo
+        for h in habitsToDay
     ]

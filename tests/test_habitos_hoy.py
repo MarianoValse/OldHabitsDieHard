@@ -1,7 +1,7 @@
 from datetime import date
 from fastapi.testclient import TestClient
 from src.api.main import app
-from src.services.db import get_connection
+from src.services.db import getConnection
 
 client = TestClient(app)
 
@@ -9,41 +9,40 @@ client = TestClient(app)
 def test_habitos_hoy_marca_correctamente():
     
     x=1 
-    hoy = date.today().isoformat()
+    fecha = date.today().isoformat()
 
     # limpiamos registros
-    with get_connection() as conn:
-        conn.execute("DELETE FROM registros")
+    with getConnection() as conn:
+        conn.execute("DELETE FROM Entries")
 
     # obtenemos hábitos
-    resp = client.get("/habitos")
-    habitos = resp.json()
+    resp = client.get("/habits")
+    habits = resp.json()
 
-    assert len(habitos) > 0
+    assert len(habits) > 0
 
-    primer_habito = habitos[0]
+    firstHabit = habits[0]
 
     # marcamos uno como hecho hoy
-    client.post(
-        "/registro",
+    client.post("/entries",
         json={
-            "habito_id": primer_habito["id"],
-            "valor": 1,
-            "fecha": hoy
+            "habit_id": firstHabit["id"],
+            "value": 1,
+            "entrieDate": fecha
         }
     )
 
     # pedimos hábitos de hoy
-    resp = client.get("/habitos/hoy")
+    resp = client.get("/habits/today")
     data = resp.json()
 
-    encontrado = False
+    find = False
 
     for h in data:
-        if h["id"] == primer_habito["id"]:
-            encontrado = True
+        if h["id"] == firstHabit["id"]:
+            find = True
             assert h["hecho"] is True
         else:
             assert h["hecho"] is False
 
-    assert encontrado is True
+    assert find is True
